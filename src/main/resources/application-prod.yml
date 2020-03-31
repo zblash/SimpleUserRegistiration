@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    password: xxxxxxxx
+    url: jdbc:postgresql://xxxxpostgres.xxxx.eu-central-1.rds.amazonaws.com:5432/demo
+    username: xxxxxxxx
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    debug: true
+    host: your.mail.host
+    port: 111
+    username: your.mail.username
+    password: your.mail.password
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

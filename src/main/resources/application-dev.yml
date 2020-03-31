@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    password: postgres
+    url: jdbc:postgresql://localhost:4540/demo
+    username: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    debug: true
+    host: smtp.gmail.com
+    port: 587
+    username: zblashh7@gmail.com
+    password: fb19077774
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

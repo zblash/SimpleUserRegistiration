@@ -41,6 +41,12 @@ public class User extends BaseModel {
 
     private Date resetTokenExpireTime;
 
+    private Date activationTokenSentTime;
+
+    private boolean active;
+
+    private boolean banned;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id",referencedColumnName = "id")
     private Role role;
