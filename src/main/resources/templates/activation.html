@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragment/main_layout}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
 <head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>Account Activation</title>
 </head>
 <body>
-<div class="login-box">
+<div layout:fragment="content">
     <form th:action="@{/activation}" method="post" th:object="${activation}">
         <h1>Activation</h1>
         <div class="alert alert-dismissible alert-danger" th:if="${#fields.hasErrors('activationCode')}">

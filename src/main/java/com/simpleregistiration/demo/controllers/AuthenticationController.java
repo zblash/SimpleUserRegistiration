@@ -3,6 +3,9 @@ package com.simpleregistiration.demo.controllers;
 import com.simpleregistiration.demo.dtos.WritableActivation;
 import com.simpleregistiration.demo.dtos.WritableForgotPassword;
 import com.simpleregistiration.demo.dtos.WritableRegister;
+import com.simpleregistiration.demo.dtos.WritableResetPassword;
+import com.simpleregistiration.demo.errors.BadRequestException;
+import com.simpleregistiration.demo.errors.ResourceNotFound;
 import com.simpleregistiration.demo.events.OnUserForgotPasswordEvent;
 import com.simpleregistiration.demo.events.OnUserRegistrationEvent;
 import com.simpleregistiration.demo.models.User;
@@ -46,13 +49,18 @@ public class AuthenticationController {
         if (result.hasErrors()) {
             return "register";
         }
-        User user = UserMapper.writableRegisterToUser(register);
-        user.setActivationCode(RandomStringGenerator.generateNumberString());
-        user.setActivationTokenSentTime(new Date());
-        userService.create(user, register.getRoleType());
-        eventPublisher.publishEvent(new OnUserRegistrationEvent(user, request.getContextPath(), request.getLocale()));
 
-        return "redirect:/activation";
+        User user = UserMapper.writableRegisterToUser(register);
+        if (userService.canRegister(user)) {
+            user.setActivationCode(RandomStringGenerator.generateNumberString());
+            user.setActivationTokenSentTime(new Date());
+            userService.create(user, register.getRoleType());
+            eventPublisher.publishEvent(new OnUserRegistrationEvent(user, request.getContextPath(), request.getLocale()));
+            return "redirect:/activation";
+        } else {
+            model.addAttribute("error", "This email address already registered in system");
+            return "register";
+        }
     }
 
     @GetMapping("/activation")
@@ -70,7 +78,7 @@ public class AuthenticationController {
 
         User user = userService.findByActivationCode(writableActivation.getActivationCode());
         user.setActive(true);
-
+        userService.update(user.getId(), user);
         return "redirect:/login";
     }
 
@@ -84,15 +92,39 @@ public class AuthenticationController {
     public String forgotPasswordPost(@Valid @ModelAttribute("forgot") WritableForgotPassword writableForgotPassword, BindingResult result, Model model, WebRequest request) {
 
         if (result.hasErrors()) {
-            model.addAttribute("forgot", writableForgotPassword);
-            return "activation";
+            return "forgot-password";
         }
-        User user = userService.findByEmail(writableForgotPassword.getEmail());
-        user.setPasswordResetToken(RandomStringGenerator.generateId());
-        userService.update(user.getId(), user);
-        eventPublisher.publishEvent(new OnUserForgotPasswordEvent(user, request.getContextPath(), request.getLocale()));
+        try {
+            User user = userService.findByEmail(writableForgotPassword.getEmail());
+            user.setPasswordResetToken(RandomStringGenerator.generateId());
+            userService.update(user.getId(), user);
+            eventPublisher.publishEvent(new OnUserForgotPasswordEvent(user, request.getContextPath(), request.getLocale()));
+        } catch (ResourceNotFound e) {
+            model.addAttribute("error", e.getMessage());
+            return "forgot-password";
+        }
+
         return "redirect:/login";
     }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(@RequestParam(name = "token") String token, Model model) {
+        model.addAttribute("token", token);
+        model.addAttribute("resetPassword", new WritableResetPassword());
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPaswordPost(@RequestParam(name = "token") String token, @Valid @ModelAttribute("resetPassword") WritableResetPassword writableResetPassword, BindingResult result, Model model) {
+        try {
+            User user = userService.findByResetToken(token);
+            userService.changePassword(user, writableResetPassword.getPassword());
+            return "redirect:/login";
+        }catch (BadRequestException ex) {
+            return "redirect:/";
+        }
+    }
+
     @RequestMapping("/login")
     public String loginPage() {
         return "login";

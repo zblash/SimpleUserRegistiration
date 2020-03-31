@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">SimpleUserRegistration</a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">
+                        Anasayfa
+                    </a>
+                </li>
+                <th:block sec:authorize="hasRole('ADMIN')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/hr/joblisting/list}">
+                            İş İlanları
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/hr/joblisting/create}">
+                            Yeni İlan Ekle
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/hr/applicant/list}">
+                            Başvuranlar Listesi
+                        </a>
+                    </li>
+                </th:block>
+            </ul>
+            <th:block sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="POST">
+                    <button type="submit" class="btn btn-secondary">Çıkış Yap</button>
+                </form>
+            </th:block>
+            <th:block sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" th:text="${'Giriş Yap'}" class="btn btn-secondary"></a>
+            </th:block>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

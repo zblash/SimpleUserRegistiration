@@ -40,7 +40,7 @@ public class CustomPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !user.isBanned();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CustomPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isActive();
     }
 
     public User getUser() {

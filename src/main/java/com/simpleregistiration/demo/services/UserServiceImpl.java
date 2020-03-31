@@ -2,11 +2,12 @@ package com.simpleregistiration.demo.services;
 
 import com.simpleregistiration.demo.enums.RoleType;
 import com.simpleregistiration.demo.errors.BadRequestException;
+import com.simpleregistiration.demo.errors.ResourceNotFound;
 import com.simpleregistiration.demo.models.Role;
 import com.simpleregistiration.demo.models.User;
 import com.simpleregistiration.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private RoleService roleService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public List<User> findAll() {
@@ -39,8 +40,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByResetToken(String resetToken) {
+        return userRepository.findByPasswordResetToken(resetToken).orElseThrow(() -> new BadRequestException("Reset token is invalid"));
+    }
+
+    @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFound("User not found with email"));
     }
 
     @Override
@@ -57,7 +63,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(updatedUser.getEmail());
         user.setName(updatedUser.getName());
         user.setSurname(updatedUser.getSurname());
-        user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        user.setPassword(updatedUser.getPassword());
         user.setActive(updatedUser.isActive());
         user.setBanned(updatedUser.isBanned());
         user.setPasswordResetToken(updatedUser.getPasswordResetToken());

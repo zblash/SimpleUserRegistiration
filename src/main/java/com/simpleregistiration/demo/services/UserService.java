@@ -13,6 +13,8 @@ public interface UserService {
 
     User findByActivationCode(String activationCode);
 
+    User findByResetToken(String resetToken);
+
     User findByEmail(String email);
 
     User create(User user, RoleType roleType);
