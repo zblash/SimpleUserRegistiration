@@ -35,7 +35,7 @@ public class User extends BaseModel {
     @Size(min = 5, max = 90)
     private String password;
 
-    private String activationToken;
+    private String activationCode;
 
     private String passwordResetToken;
 

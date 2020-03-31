@@ -34,6 +34,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByActivationCode(String activationCode) {
+       return userRepository.findByActivationCode(activationCode).orElseThrow(() -> new BadRequestException("Activation code is invalid"));
+    }
+
+    @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
     }
@@ -53,6 +58,12 @@ public class UserServiceImpl implements UserService {
         user.setName(updatedUser.getName());
         user.setSurname(updatedUser.getSurname());
         user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        user.setActive(updatedUser.isActive());
+        user.setBanned(updatedUser.isBanned());
+        user.setPasswordResetToken(updatedUser.getPasswordResetToken());
+        user.setActivationTokenSentTime(updatedUser.getActivationTokenSentTime());
+        user.setActivationCode(updatedUser.getActivationCode());
+        user.setRole(updatedUser.getRole());
         return userRepository.save(user);
     }
 

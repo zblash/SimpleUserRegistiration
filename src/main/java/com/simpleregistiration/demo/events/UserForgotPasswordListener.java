@@ -7,15 +7,15 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserRegistrationListener implements ApplicationListener<OnUserRegistrationEvent> {
+public class UserForgotPasswordListener implements ApplicationListener<OnUserForgotPasswordEvent> {
 
     @Autowired
     MailUtil mailUtil;
 
     @Override
-    public void onApplicationEvent(OnUserRegistrationEvent event) {
+    public void onApplicationEvent(OnUserForgotPasswordEvent event) {
         User user = event.getUser();
-        mailUtil.sendActivationMail(user.getEmail(), user.getActivationCode(), event.getApplicationUrl(), event.getLocale());
+        mailUtil.sendPasswordResetMail(user.getEmail(), user.getPasswordResetToken(), event.getApplicationUrl(), event.getLocale());
     }
 
 }

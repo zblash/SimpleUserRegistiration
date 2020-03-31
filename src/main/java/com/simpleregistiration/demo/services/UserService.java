@@ -11,6 +11,8 @@ public interface UserService {
 
     User findById(Long id);
 
+    User findByActivationCode(String activationCode);
+
     User findByEmail(String email);
 
     User create(User user, RoleType roleType);

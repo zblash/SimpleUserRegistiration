@@ -7,15 +7,15 @@
 </head>
 <body>
 <div class="login-box">
-    <form th:action="@{/activation}" method="post">
-        <h1>Giriş</h1>
-        <div class="alert alert-dismissible alert-danger" th:if="${param.error}">
-            Activation code is invalid.
+    <form th:action="@{/activation}" method="post" th:object="${activation}">
+        <h1>Activation</h1>
+        <div class="alert alert-dismissible alert-danger" th:if="${#fields.hasErrors('activationCode')}">
+            <span th:errors="*{activationCode}">Errors</span>
+
         </div>
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <div class="textbox">
             <i class="fas fa-user"></i>
-            <input type="text" name="activationCode" placeholder="Email Adresiniz"/>
+            <input type="text" th:field="*{ActivationCode}" placeholder="Name"/>
         </div>
 
         <input type="submit" class="btn" value="Giriş Yap">
