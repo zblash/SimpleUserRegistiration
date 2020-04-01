@@ -76,10 +76,15 @@ public class AuthenticationController {
             return "activation";
         }
 
-        User user = userService.findByActivationCode(writableActivation.getActivationCode());
-        user.setActive(true);
-        userService.update(user.getId(), user);
-        return "redirect:/login";
+        try {
+            User user = userService.findByActivationCode(writableActivation.getActivationCode());
+            user.setActive(true);
+            userService.update(user.getId(), user);
+            return "redirect:/login";
+        } catch (BadRequestException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "activation";
+        }
     }
 
     @GetMapping("/forgot-password")

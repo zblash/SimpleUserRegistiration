@@ -11,7 +11,9 @@
 <div layout:fragment="content">
     <form class="form-signin" th:action="@{/register}" th:object="${user}" method="post">
         <h1 class="h3 mb-3 font-weight-normal">Register</h1>
-
+        <div class="alert alert-danger" th:if="${error}">
+           <p th:text="${error}">error</p>
+        </div>
         <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
             <ul>
                 <li th:each="err : ${#fields.detailedErrors('*')}"><span th:text="${err}">Errors</span></li>
