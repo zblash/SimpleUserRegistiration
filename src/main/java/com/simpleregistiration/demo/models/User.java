@@ -43,6 +43,8 @@ public class User extends BaseModel {
 
     private Date activationTokenSentTime;
 
+    private Date createdAt;
+
     private boolean active;
 
     private boolean banned;

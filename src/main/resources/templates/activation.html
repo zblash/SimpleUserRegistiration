@@ -9,18 +9,18 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <form th:action="@{/activation}" method="post" th:object="${activation}">
-        <h1>Activation</h1>
-        <div class="alert alert-dismissible alert-danger" th:if="${#fields.hasErrors('activationCode')}">
-            <span th:errors="*{activationCode}">Errors</span>
-
+    <form th:action="@{/activation}" method="post" class="form-signin" th:object="${activation}">
+        <h1 class="h3 mb-3 font-weight-normal">Activation</h1>
+        <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+            <ul>
+                <li th:each="err : ${#fields.detailedErrors('*')}"><span th:text="${err}">Errors</span></li>
+            </ul>
         </div>
-        <div class="textbox">
-            <i class="fas fa-user"></i>
-            <input type="text" th:field="*{ActivationCode}" placeholder="Name"/>
-        </div>
-
-        <input type="submit" class="btn" value="Giriş Yap">
+                <label for="inputEmail" class="sr-only">Email address</label>
+            <input type="email" id="inputEmail" th:field="*{ActivationCode}" class="form-control"
+                   placeholder="Activation Code" required=""
+                   autofocus="">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>>
     </form>
 </div>
 

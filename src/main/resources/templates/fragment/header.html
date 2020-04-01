@@ -17,25 +17,21 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/}">
-                        Anasayfa
+                        Home
                     </a>
                 </li>
                 <th:block sec:authorize="hasRole('ADMIN')">
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/hr/joblisting/list}">
-                            İş İlanları
+                        <a class="nav-link" th:href="@{/app/admin/users/not-active}">
+                           Users Who have not activated
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/hr/joblisting/create}">
-                            Yeni İlan Ekle
+                        <a class="nav-link" th:href="@{/app/admin/users/registered}">
+                            Registered Users
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/hr/applicant/list}">
-                            Başvuranlar Listesi
-                        </a>
-                    </li>
+
                 </th:block>
             </ul>
             <th:block sec:authorize="isAuthenticated()">

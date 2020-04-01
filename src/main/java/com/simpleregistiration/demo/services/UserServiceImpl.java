@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,6 +28,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> findAllByRegisteredDateRange(Date firstDate, Date lastDate) {
+        return userRepository.findAllByCreatedAtBetween(firstDate, lastDate);
+    }
+
+    @Override
+    public List<User> findAllByActivateAndCodeSentTimeRange(boolean isActive, Date firstDate, Date lastDate) {
+       return userRepository.findAllByActiveAndActivationTokenSentTimeBetween(isActive, firstDate, lastDate);
     }
 
     @Override
@@ -53,6 +64,7 @@ public class UserServiceImpl implements UserService {
     public User create(User user, RoleType roleType) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleService.createOrFind("ROLE_"+roleType.toString());
+        user.setCreatedAt(new Date());
         user.setRole(role);
         return userRepository.save(user);
     }

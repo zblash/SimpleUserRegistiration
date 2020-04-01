@@ -3,11 +3,16 @@ package com.simpleregistiration.demo.services;
 import com.simpleregistiration.demo.enums.RoleType;
 import com.simpleregistiration.demo.models.User;
 
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
 
     List<User> findAll();
+
+    List<User> findAllByRegisteredDateRange(Date firstDate, Date lastDate);
+
+    List<User> findAllByActivateAndCodeSentTimeRange(boolean isActive, Date firstDate, Date lastDate);
 
     User findById(Long id);
 

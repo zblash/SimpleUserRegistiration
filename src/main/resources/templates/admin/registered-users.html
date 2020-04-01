@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragment/main_layout}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Activation</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-6 float-left">
+            <p th:text="${'Online Users ' + onlineUsers}"></p></div>
+        <div class="col-6 float-right">
+            <form method="get" th:action="@{/app/admin/users/registered}">
+                <div class="row pb-1">
+                    <div class="col-6 float-left">
+                        <select id="inputRole" class="form-control" name="date">
+                            <option th:each="date : ${T(com.simpleregistiration.demo.enums.DateFilter).values()}"
+                                    th:value="${date}" th:text="${date.SecondValue}"></option>
+                        </select></div>
+                    <div class="col-6 float-right">
+                        <button class="btn btn-primary btn-block" type="submit">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-12">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <th scope="row"><p th:text="${user.id}">id</p></th>
+                    <th scope="row"><p th:text="${user.email}">email</p></th>
+                    <th scope="row"><p th:text="${user.name}">name</p></th>
+                    <th scope="row"><p th:text="${user.surname}">surname</p></th>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
