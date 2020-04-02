@@ -59,7 +59,7 @@ public class MailUtil {
                 mailTemplate,
                 mailAddress,
                 Objects.requireNonNull(mailTemplate.getText()) +
-                        applicationUrl+"forgot-password?token="+passwordResetToken);
+                        "<a href='"+applicationUrl+"forgot-password?token="+passwordResetToken + "'> link</a>");
         javaMailSender.send(mimeMessage);
     }
 
