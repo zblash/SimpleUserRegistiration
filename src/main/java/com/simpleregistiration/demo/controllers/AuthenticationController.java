@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public String saveRegister(@Valid @ModelAttribute("user") WritableRegister register, BindingResult result, Model model, WebRequest request) {
+    public String saveRegister(@Valid @ModelAttribute("user") WritableRegister register, BindingResult result, Model model, WebRequest request, RedirectAttributes redirectAttributes) {
         model.addAttribute("user", register);
 
         if (result.hasErrors()) {
@@ -57,6 +58,7 @@ public class AuthenticationController {
             user.setActivationTokenSentTime(LocalDateTime.now());
             userService.create(user, register.getRoleType());
             eventPublisher.publishEvent(new OnUserRegistrationEvent(user, request.getContextPath(), request.getLocale()));
+            redirectAttributes.addFlashAttribute("message", "Your account created, please enter the code that comes to your e-mail");
             return "redirect:/activation";
         } else {
             model.addAttribute("error", "This email address already registered in system");
@@ -71,7 +73,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/activation")
-    public String activationPost(@Valid @ModelAttribute("activation") WritableActivation writableActivation, BindingResult result, Model model) {
+    public String activationPost(@Valid @ModelAttribute("activation") WritableActivation writableActivation, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("activation", writableActivation);
             return "activation";
@@ -81,6 +83,7 @@ public class AuthenticationController {
             User user = userService.findByActivationCode(writableActivation.getActivationCode());
             user.setActive(true);
             userService.update(user.getId(), user);
+            redirectAttributes.addFlashAttribute("message", "Your account is activated. You can login");
             return "redirect:/login";
         } catch (BadRequestException ex) {
             model.addAttribute("error", ex.getMessage());
@@ -95,7 +98,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/forgot-password")
-    public String forgotPasswordPost(@Valid @ModelAttribute("forgot") WritableForgotPassword writableForgotPassword, BindingResult result, Model model, WebRequest request) {
+    public String forgotPasswordPost(@Valid @ModelAttribute("forgot") WritableForgotPassword writableForgotPassword, BindingResult result, Model model, WebRequest request, RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
             return "forgot-password";
@@ -110,6 +113,7 @@ public class AuthenticationController {
             return "forgot-password";
         }
 
+        redirectAttributes.addFlashAttribute("message", "We have sent e-mail for reset your password, please follow that link");
         return "redirect:/login";
     }
 
@@ -121,10 +125,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset-password")
-    public String resetPasswordPost(@RequestParam(name = "token") String token, @Valid @ModelAttribute("resetPassword") WritableResetPassword writableResetPassword, BindingResult result, Model model) {
+    public String resetPasswordPost(@RequestParam(name = "token") String token, @Valid @ModelAttribute("resetPassword") WritableResetPassword writableResetPassword, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         try {
             User user = userService.findByResetToken(token);
             userService.changePassword(user, writableResetPassword.getPassword());
+
+            redirectAttributes.addFlashAttribute("message", "Your password changed. You can login");
             return "redirect:/login";
         }catch (BadRequestException ex) {
             return "redirect:/";
