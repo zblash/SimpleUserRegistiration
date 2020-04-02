@@ -6,6 +6,7 @@ import com.simpleregistiration.demo.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Controller
@@ -31,25 +34,25 @@ public class AdminController {
     private Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @GetMapping("/users/registered")
-    public String getAllRegisteredUsers(@RequestParam(required = false) DateFilter date, Model model) {
+    public String getAllRegisteredUsersPage(@RequestParam(required = false) DateFilter date, Model model) {
         List<User> users;
         if (date != null) {
-            long firstDate;
+            LocalDateTime firstDate;
             switch (date) {
                 case LASTDAY:
-                    firstDate = 1000L * 60L * 60L * 24L;
+                    firstDate = LocalDateTime.now().minusDays(1);
                     break;
                 case LASTWEEK:
-                    firstDate = 1000L * 60L * 60L * 24L * 7L;
+                    firstDate = LocalDateTime.now().minusWeeks(1);
                     break;
                 case LASTMONTH:
-                    firstDate = 1000L * 60L * 60L * 24L * 30L;
+                    firstDate = LocalDateTime.now().minusMonths(1);
                     break;
                 default:
-                    firstDate = 0;
+                    firstDate = LocalDateTime.now();
                     break;
             }
-            users = userService.findAllByRegisteredDateRange(new Date(System.currentTimeMillis() - firstDate), new Date());
+            users = userService.findAllByRegisteredDateRange(firstDate, LocalDateTime.now());
         } else {
             users = userService.findAll();
         }
@@ -59,9 +62,16 @@ public class AdminController {
     }
 
     @GetMapping("/users/not-active")
-    public String getAllNotActiveUsers(Model model) {
-        Date yesterday = new Date(System.currentTimeMillis() - 1000L * 60L * 60L * 24L);
-        model.addAttribute("users", userService.findAllByActivateAndCodeSentTimeRange(false, yesterday, new Date()));
+    public String getAllNotActiveUsersPage(Model model) {
+        model.addAttribute("users", userService.findAllByActivateAndCodeSentTimeRange(false, LocalDateTime.now().minusDays(1), LocalDateTime.now()));
         return "admin/not-active-users";
+    }
+
+    @GetMapping("/users/avg-complete-login")
+    public String getAverageCompleteLoginPage(@RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, Model model) {
+
+        int avgSec = userService.getCompleteLoginAverageByDateRange(date.atTime(23,59,59).minusDays(1), date.atTime(23,59,59), ChronoUnit.SECONDS);
+        model.addAttribute("avgSec", avgSec);
+        return "admin/avg-complete-login";
     }
 }

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 @Service
@@ -31,12 +33,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllByRegisteredDateRange(Date firstDate, Date lastDate) {
+    public List<User> findAllByRegisteredDateRange(LocalDateTime firstDate, LocalDateTime lastDate) {
         return userRepository.findAllByCreatedAtBetween(firstDate, lastDate);
     }
 
     @Override
-    public List<User> findAllByActivateAndCodeSentTimeRange(boolean isActive, Date firstDate, Date lastDate) {
+    public List<User> findAllByActivateAndCodeSentTimeRange(boolean isActive, LocalDateTime firstDate, LocalDateTime lastDate) {
        return userRepository.findAllByActiveAndActivationTokenSentTimeBetween(isActive, firstDate, lastDate);
     }
 
@@ -64,7 +66,7 @@ public class UserServiceImpl implements UserService {
     public User create(User user, RoleType roleType) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleService.createOrFind("ROLE_"+roleType.toString());
-        user.setCreatedAt(new Date());
+        user.setCreatedAt(LocalDateTime.now());
         user.setRole(role);
         return userRepository.save(user);
     }
@@ -82,6 +84,9 @@ public class UserServiceImpl implements UserService {
         user.setActivationTokenSentTime(updatedUser.getActivationTokenSentTime());
         user.setActivationCode(updatedUser.getActivationCode());
         user.setRole(updatedUser.getRole());
+        if (updatedUser.getFirstLoginDate() != null) {
+            user.setFirstLoginDate(updatedUser.getFirstLoginDate());
+        }
         return userRepository.save(user);
     }
 
@@ -99,5 +104,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean canRegister(User user){
         return !userRepository.findByEmail(user.getEmail()).isPresent();
+    }
+
+    @Override
+    public int getCompleteLoginAverageByDateRange(LocalDateTime firstDate, LocalDateTime lastDate, TemporalUnit temporalUnit) {
+        List<User> users = userRepository.findAllByFirstLoginDateBetween(firstDate, lastDate);
+
+        return (int) users.stream()
+                .mapToDouble(user -> user.getActivationTokenSentTime().until(user.getFirstLoginDate(), temporalUnit))
+                .average().orElse(0);
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Controller
@@ -53,7 +54,7 @@ public class AuthenticationController {
         User user = UserMapper.writableRegisterToUser(register);
         if (userService.canRegister(user)) {
             user.setActivationCode(RandomStringGenerator.generateNumberString());
-            user.setActivationTokenSentTime(new Date());
+            user.setActivationTokenSentTime(LocalDateTime.now());
             userService.create(user, register.getRoleType());
             eventPublisher.publishEvent(new OnUserRegistrationEvent(user, request.getContextPath(), request.getLocale()));
             return "redirect:/activation";
@@ -120,7 +121,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset-password")
-    public String resetPaswordPost(@RequestParam(name = "token") String token, @Valid @ModelAttribute("resetPassword") WritableResetPassword writableResetPassword, BindingResult result, Model model) {
+    public String resetPasswordPost(@RequestParam(name = "token") String token, @Valid @ModelAttribute("resetPassword") WritableResetPassword writableResetPassword, BindingResult result, Model model) {
         try {
             User user = userService.findByResetToken(token);
             userService.changePassword(user, writableResetPassword.getPassword());

@@ -9,7 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = false)
 @Entity
@@ -39,11 +39,13 @@ public class User extends BaseModel {
 
     private String passwordResetToken;
 
-    private Date resetTokenExpireTime;
+    private LocalDateTime resetTokenExpireTime;
 
-    private Date activationTokenSentTime;
+    private LocalDateTime activationTokenSentTime;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime firstLoginDate;
 
     private boolean active;
 

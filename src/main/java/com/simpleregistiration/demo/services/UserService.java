@@ -3,16 +3,17 @@ package com.simpleregistiration.demo.services;
 import com.simpleregistiration.demo.enums.RoleType;
 import com.simpleregistiration.demo.models.User;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 public interface UserService {
 
     List<User> findAll();
 
-    List<User> findAllByRegisteredDateRange(Date firstDate, Date lastDate);
+    List<User> findAllByRegisteredDateRange(LocalDateTime firstDate, LocalDateTime lastDate);
 
-    List<User> findAllByActivateAndCodeSentTimeRange(boolean isActive, Date firstDate, Date lastDate);
+    List<User> findAllByActivateAndCodeSentTimeRange(boolean isActive, LocalDateTime firstDate, LocalDateTime lastDate);
 
     User findById(Long id);
 
@@ -31,5 +32,7 @@ public interface UserService {
     void delete(User user);
 
     boolean canRegister(User user);
+
+    int getCompleteLoginAverageByDateRange(LocalDateTime firstDate, LocalDateTime lastDate, TemporalUnit temporalUnit);
 
 }

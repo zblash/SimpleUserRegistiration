@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragment/main_layout}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <meta charset="UTF-8">
+    <title>How long it takes to complete login </title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row pb-1">
+        <div class="col-12">
+            <form method="get" th:action="@{/app/admin/users/avg-complete-login}">
+                <div class="col-6 float-left">
+                    <div class="col-6 float-left">
+                        <label>Select Date for filter</label>
+                    </div>
+                    <div class="col-6 float-right">
+                        <input data-provide="datepicker" name="date" class="form-control datepicker">
+                    </div>
+                </div>
+                <div class="col-6 float-right">
+                    <button class="btn btn-primary btn-block" type="submit">Filter</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 mt-3">
+            <h2 th:if="${avgSec != null}"
+                th:text="${'Average completely login time takes ' + avgSec + ' seconds.'}"></h2>
+            <h1 th:unless="${avgSec != null}">Please select a date</h1>
+        </div>
+    </div>
+
+</div>
+<th:block layout:fragment="script">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+        });
+    </script>
+</th:block>
+</body>
+</html>
