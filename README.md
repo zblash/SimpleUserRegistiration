@@ -41,7 +41,7 @@ mvn spring-boot:run
 ```sh
 docker-compose up
 ```
-> If you don't want to use docker or you have already database then you have to edit application.yml files under resources files and if you want to change database then you have to change dependency for your database.
+> If you don't want to use docker or you have already database then you have to edit application.yml files under resources files and if you want to change database then you have to change dependency for your database. For e-mail service you have to edit application.yml files with your e-mail service's informations
 
 # Workflow
 ## User Registration 
